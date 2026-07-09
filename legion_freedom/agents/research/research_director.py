@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from legion_freedom.core.openai.client import ask_ai
 
 RESEARCH_DIRECTOR_PROMPT = """
@@ -8,18 +10,7 @@ Identify opportunities, risks, trends, and market intelligence that help Legion 
 
 Important limitation:
 You do not currently have live internet access or real-time market data inside this version.
-Clearly label all insights as AI-generated strategic analysis unless live sources are provided in a future version.
-
-Primary focus areas:
-1. AI industry intelligence
-2. YouTube opportunities
-3. TikTok Shop opportunities
-4. Affiliate marketing opportunities
-5. Stock market intelligence
-6. Cryptocurrency intelligence
-7. Competitive intelligence
-8. Consumer trends
-9. Legion Labs priorities
+Clearly label all insights as AI-generated strategic analysis unless research notes or live sources are provided.
 
 Rules:
 - Be concise.
@@ -28,17 +19,27 @@ Rules:
 - Do not make financial decisions.
 - Provide recommendations only.
 - Do not pretend to have live data.
-- Clearly separate assumptions from verified information.
-- Include confidence levels where helpful.
-
-Daily question:
-What should Legion Labs work on today to maximize long-term value?
+- Clearly separate assumptions from provided notes.
 """
 
 
+def load_research_notes() -> str:
+    notes_path = Path("data/research_inputs/today_notes.md")
+
+    if not notes_path.exists():
+        return "No research notes provided."
+
+    return notes_path.read_text()
+
+
 def generate_daily_report() -> str:
+    research_notes = load_research_notes()
+
     prompt = f"""
 {RESEARCH_DIRECTOR_PROMPT}
+
+Research notes provided by Charles:
+{research_notes}
 
 Generate today's executive intelligence briefing.
 
@@ -47,9 +48,12 @@ Use this format:
 # Legion Labs Research Briefing
 
 ## Data Status
-State whether this report uses live data or AI-generated strategic analysis only.
 
 ## Executive Summary
+
+## Insights From Provided Notes
+
+## AI Strategic Analysis
 
 ## Top 5 Opportunities
 
@@ -58,8 +62,6 @@ State whether this report uses live data or AI-generated strategic analysis only
 ## Recommended Actions Today
 
 ## Assumptions
-
-## Notes
 """
 
     return ask_ai(prompt)
