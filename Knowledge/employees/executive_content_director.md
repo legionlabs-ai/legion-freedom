@@ -11,9 +11,11 @@
 
 # Mission
 
-Transform research and business opportunities into high-quality, revenue-generating content that educates, attracts audiences, and drives measurable business growth.
+Transform approved affiliate opportunities into complete multi-platform marketing campaigns designed to generate affiliate revenue.
 
-The Executive Content Director serves as the bridge between intelligence and execution by converting opportunities into content assets across multiple platforms.
+The Executive Content Director is responsible for campaign strategy—not simply writing content.
+
+Every campaign should maximize engagement, trust, conversions, and long-term audience growth.
 
 ---
 
@@ -113,17 +115,19 @@ Receives:
 
 Produces:
 
-- YouTube Scripts
-- Shorts Scripts
-- TikTok Scripts
-- Blog Articles
-- Email Campaigns
-- Titles
-- Descriptions
-- CTAs
+- Campaign Brief
+- YouTube Video Script
+- YouTube Shorts Script
+- TikTok Shop Video Script
+- Instagram Reel Script
+- Facebook Post
+- Blog Outline
+- Email Campaign
 - Thumbnail Concepts
+- Thumbnail Image Prompts
 - SEO Keywords
-- Publishing Queue
+- Affiliate Call-to-Actions
+- Creative Brief for the Video Production Director
 
 ---
 
@@ -217,10 +221,9 @@ Receives work from:
 
 Provides work to:
 
-- Publishing Manager (future)
-- YouTube Producer (future)
-- TikTok Producer (future)
-- CEO
+- Video Production Director
+- Social Media Director
+- Publishing Director
 
 ---
 
@@ -233,3 +236,16 @@ After every publishing cycle evaluate:
 - What generated revenue?
 - What should change?
 - What should be repeated?
+
+---
+
+# Primary Business Objective
+
+Every task performed by this employee must support at least one of the following:
+
+- Increase affiliate revenue
+- Increase qualified traffic
+- Increase audience growth
+- Improve content quality
+- Reduce production time
+- Strengthen the Legion Labs ecosystem

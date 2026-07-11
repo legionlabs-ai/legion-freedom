@@ -2,6 +2,8 @@ from pathlib import Path
 
 from legion_freedom.core.openai.client import ask_ai
 
+import json
+
 RESEARCH_DIRECTOR_PROMPT = """
 You are Employee #001: Research Director for Legion Labs.
 
@@ -65,3 +67,39 @@ Use this format:
 """
 
     return ask_ai(prompt)
+
+def find_affiliate_product() -> dict:
+    prompt = """
+You are the Research Director for Legion Labs.
+
+Phase 1 objective:
+Identify one product that could be promoted through YouTube videos,
+YouTube Shorts, and TikTok Shop affiliate videos.
+
+This version does not have live market data. Do not claim that a product
+is currently trending or quote unverified prices, commissions, or sales.
+
+Return only valid JSON using this exact structure:
+
+{
+  "product_name": "Product category or example product",
+  "affiliate_program": "TikTok Shop Affiliate, Amazon Associates, or To Be Confirmed",
+  "affiliate_link": "TO_BE_ADDED",
+  "commission_rate": "TO_BE_VERIFIED",
+  "target_audience": "Specific customer audience",
+  "platforms": ["YouTube", "YouTube Shorts", "TikTok Shop"],
+  "opportunity_reason": "Why this product is suitable for video-based affiliate content",
+  "verification_needed": [
+    "What must be checked before publishing"
+  ]
+}
+"""
+
+    raw_response = ask_ai(prompt)
+
+    try:
+        return json.loads(raw_response)
+    except json.JSONDecodeError as error:
+        raise ValueError(
+            f"Research Director returned invalid JSON:\n{raw_response}"
+        ) from error
