@@ -1,27 +1,31 @@
+import json
+from datetime import datetime
 from pathlib import Path
 
 from legion_freedom.core.openai.client import ask_ai
+from legion_freedom.core.products.product import Product
 
-import json
 
 RESEARCH_DIRECTOR_PROMPT = """
 You are Employee #001: Research Director for Legion Labs.
 
 Mission:
-Identify opportunities, risks, trends, and market intelligence that help Legion Labs generate revenue and make better business decisions.
+Identify affiliate products and consumer opportunities with the highest
+probability of generating revenue through YouTube, YouTube Shorts, and
+TikTok Shop content.
 
 Important limitation:
-You do not currently have live internet access or real-time market data inside this version.
-Clearly label all insights as AI-generated strategic analysis unless research notes or live sources are provided.
+You do not currently have live internet access or real-time market data.
+Clearly label insights as AI-generated strategic analysis unless research
+notes or verified sources are provided.
 
 Rules:
 - Be concise.
-- Focus on action.
-- Prioritize revenue opportunities.
-- Do not make financial decisions.
-- Provide recommendations only.
+- Focus on actionable affiliate opportunities.
+- Prioritize revenue potential.
 - Do not pretend to have live data.
-- Clearly separate assumptions from provided notes.
+- Do not invent prices, commissions, availability, or sales performance.
+- Clearly separate assumptions from verified information.
 """
 
 
@@ -31,7 +35,7 @@ def load_research_notes() -> str:
     if not notes_path.exists():
         return "No research notes provided."
 
-    return notes_path.read_text()
+    return notes_path.read_text(encoding="utf-8")
 
 
 def generate_daily_report() -> str:
@@ -41,9 +45,10 @@ def generate_daily_report() -> str:
 {RESEARCH_DIRECTOR_PROMPT}
 
 Research notes provided by Charles:
+
 {research_notes}
 
-Generate today's executive intelligence briefing.
+Generate today's executive affiliate intelligence briefing.
 
 Use this format:
 
@@ -57,9 +62,9 @@ Use this format:
 
 ## AI Strategic Analysis
 
-## Top 5 Opportunities
+## Top Affiliate Opportunities
 
-## Risks / Warnings
+## Risks and Warnings
 
 ## Recommended Actions Today
 
@@ -68,22 +73,19 @@ Use this format:
 
     return ask_ai(prompt)
 
-def find_affiliate_product() -> dict:
-    prompt = """
-You are the Research Director for Legion Labs.
 
-Phase 1 objective:
+def find_affiliate_product() -> dict:
+    prompt = f"""
+{RESEARCH_DIRECTOR_PROMPT}
+
 Identify one product that could be promoted through YouTube videos,
 YouTube Shorts, and TikTok Shop affiliate videos.
 
-This version does not have live market data. Do not claim that a product
-is currently trending or quote unverified prices, commissions, or sales.
-
 Return only valid JSON using this exact structure:
 
-{
+{{
   "product_name": "Product category or example product",
-  "affiliate_program": "TikTok Shop Affiliate, Amazon Associates, or To Be Confirmed",
+  "affiliate_program": "TikTok Shop Affiliate, Amazon Associates, or TO_BE_VERIFIED",
   "affiliate_link": "TO_BE_ADDED",
   "commission_rate": "TO_BE_VERIFIED",
   "target_audience": "Specific customer audience",
@@ -92,14 +94,112 @@ Return only valid JSON using this exact structure:
   "verification_needed": [
     "What must be checked before publishing"
   ]
-}
+}}
 """
 
     raw_response = ask_ai(prompt)
 
     try:
-        return json.loads(raw_response)
+        product_data = json.loads(raw_response)
     except json.JSONDecodeError as error:
         raise ValueError(
             f"Research Director returned invalid JSON:\n{raw_response}"
         ) from error
+
+    if not isinstance(product_data, dict):
+        raise ValueError(
+            "Research Director must return one JSON product object."
+        )
+
+    return product_data
+
+
+def find_ranked_products() -> list[Product]:
+    prompt = f"""
+{RESEARCH_DIRECTOR_PROMPT}
+
+Identify exactly three affiliate product candidates suitable for YouTube,
+YouTube Shorts, and TikTok Shop videos.
+
+Score each product from 1 to 10 for:
+
+- demand_score
+- competition_score
+- commission_score
+- video_potential_score
+- evergreen_score
+- seasonality_score
+- scalability_score
+
+A higher competition_score means a better opportunity with less competition.
+
+Return only valid JSON using this exact structure:
+
+[
+  {{
+    "product_name": "Product category or example product",
+    "category": "Product category",
+    "affiliate_program": "TikTok Shop Affiliate, Amazon Associates, or TO_BE_VERIFIED",
+    "affiliate_link": "TO_BE_ADDED",
+    "commission_rate": "TO_BE_VERIFIED",
+    "target_audience": "Specific target audience",
+    "price": "TO_BE_VERIFIED",
+    "demand_score": 1,
+    "competition_score": 1,
+    "commission_score": 1,
+    "video_potential_score": 1,
+    "evergreen_score": 1,
+    "seasonality_score": 1,
+    "scalability_score": 1,
+    "opportunity_reason": "Why this product is suitable for video affiliate content",
+    "verification_needed": [
+      "Items that must be checked before publishing"
+    ]
+  }}
+]
+"""
+
+    raw_response = ask_ai(prompt)
+
+    try:
+        product_data = json.loads(raw_response)
+    except json.JSONDecodeError as error:
+        raise ValueError(
+            f"Research Director returned invalid JSON:\n{raw_response}"
+        ) from error
+
+    if not isinstance(product_data, list) or len(product_data) != 3:
+        raise ValueError(
+            "Research Director must return exactly three product candidates."
+        )
+
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    products: list[Product] = []
+
+    for index, item in enumerate(product_data, start=1):
+        product = Product(
+            product_id=f"PR-{timestamp}-{index}",
+            product_name=item["product_name"],
+            category=item["category"],
+            affiliate_program=item["affiliate_program"],
+            affiliate_link=item["affiliate_link"],
+            commission_rate=item["commission_rate"],
+            target_audience=item["target_audience"],
+            price=item["price"],
+            demand_score=item["demand_score"],
+            competition_score=item["competition_score"],
+            commission_score=item["commission_score"],
+            video_potential_score=item["video_potential_score"],
+            evergreen_score=item["evergreen_score"],
+            seasonality_score=item["seasonality_score"],
+            scalability_score=item["scalability_score"],
+            opportunity_reason=item["opportunity_reason"],
+            verification_needed=item["verification_needed"],
+        )
+        products.append(product)
+
+    return sorted(
+        products,
+        key=lambda product: product.average_score(),
+        reverse=True,
+    )

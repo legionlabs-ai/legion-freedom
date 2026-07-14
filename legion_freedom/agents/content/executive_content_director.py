@@ -79,9 +79,147 @@ def build_campaign_assets(campaign: Campaign) -> str:
     handbook = load_handbook()
 
     prompt = f"""
-You are the Executive Content Director for Legion Labs.
+You are Employee #002: Executive Content Director for Legion Labs.
 
-Follow this handbook:
+Follow this employee handbook:
+
+{handbook}
+
+Your objective is NOT simply to write marketing content.
+
+Your objective is to produce a COMPLETE CREATOR PACKAGE that can immediately be used to generate affiliate videos.
+
+Campaign Information
+
+Product:
+{campaign.product_name}
+
+Affiliate Program:
+{campaign.affiliate_program}
+
+Target Audience:
+{campaign.target_audience}
+
+Research Summary:
+{campaign.research_summary}
+
+Return the following format exactly.
+
+# LEGION LABS CREATOR PACKAGE
+
+---
+
+## Executive Summary
+
+Why this product was selected.
+
+Expected customer.
+
+Revenue opportunity.
+
+---
+
+## Higgsfield AI Master Prompt
+
+Write ONE complete prompt optimized for Higgsfield AI.
+
+Describe:
+
+• Camera angles
+
+• Lighting
+
+• Product shots
+
+• Human actions
+
+• Expressions
+
+• Environment
+
+• Cinematic movement
+
+• Colors
+
+• Style
+
+• Mood
+
+• Video length
+
+• Realism
+
+---
+
+## Voiceover Script
+
+Write a professional voiceover.
+
+---
+
+## Scene Breakdown
+
+Scene 1
+
+Scene 2
+
+Scene 3
+
+Scene 4
+
+Scene 5
+
+Include what appears on screen.
+
+---
+
+## Thumbnail Prompt
+
+Generate an AI image prompt for the thumbnail.
+
+---
+
+## YouTube Title
+
+---
+
+## YouTube Description
+
+Include affiliate disclosure.
+
+---
+
+## TikTok Caption
+
+---
+
+## Affiliate Call To Action
+
+---
+
+## Hashtags
+
+---
+
+## SEO Keywords
+
+---
+
+## Verification Checklist
+
+List everything that still requires human verification before publishing.
+
+Never invent prices.
+
+Never invent commissions.
+
+Never invent statistics.
+
+Never claim live trends.
+
+Always identify assumptions.
+
+    return ask_ai(prompt)
 
 {handbook}
 
